@@ -1,6 +1,8 @@
 # gwt-pushstate
 
-[![Build Status](https://buildhive.cloudbees.com/job/jbarop/job/gwt-pushstate/badge/icon)](https://buildhive.cloudbees.com/job/jbarop/job/gwt-pushstate/)
+This is a fork of the excellent work by [jbarop](https://github.com/jbarop/) at https://github.com/jbarop/gwt-pushstate
+
+It contains some bug fixes and is released under a new maven group.
 
 
 ## Description
@@ -32,9 +34,9 @@ gwt-pushstate implements easy to use HTML5 pushState support for GWT projects.
 Add the gwt-pushstate dependency to your project:
 
     <dependency>
-      <groupId>de.barop.gwt</groupId>
+      <groupId>com.wallissoftware</groupId>
       <artifactId>gwt-pushstate</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.0</version>
     </dependency>
 
 And inherit the PushState module in your GWT module:
