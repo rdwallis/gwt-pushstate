@@ -38,9 +38,9 @@
 
 
     <scm>
-        <connection>scm:git:https://github.com/rdwallis/gwt-pushstate.git</connection>
-        <developerConnection>scm:git:https://rdwallis@github.com/rdwallis/gwt-pushstate.git</developerConnection>
-        <url>https://github.com/rdwallis/gwt-pushstate.git</url>
+        <connection>scm:git:git@github.com:rdwallis/gwt-pushstate.git</connection>
+        <developerConnection>scm:git:git@github.com:rdwallis/gwt-pushstate.git</developerConnection>
+        <url>git@github.com:rdwallis/gwt-pushstate.git</url>
         <tag>HEAD</tag>
     </scm>
 
