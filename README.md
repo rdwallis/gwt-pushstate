@@ -36,7 +36,7 @@ Add the gwt-pushstate dependency to your project:
     <dependency>
       <groupId>com.wallissoftware</groupId>
       <artifactId>gwt-pushstate</artifactId>
-      <version>1.1.3</version>
+      <version>1.1.4</version>
     </dependency>
 
 And inherit the PushState module in your GWT module:
