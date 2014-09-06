@@ -47,6 +47,9 @@ public class HistoryImplPushState extends HistoryImpl {
     @Override
     public boolean init() {
         updateHistoryToken(Window.Location.getPath() + Window.Location.getQueryString());
+        if (getToken().isEmpty() || getToken().equals("/")) {
+            nativeUpdate(getToken());
+        }
         initPopStateHandler();
         return true;
     }
