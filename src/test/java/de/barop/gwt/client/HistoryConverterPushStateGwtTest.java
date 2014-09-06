@@ -14,9 +14,9 @@
 
 package de.barop.gwt.client;
 
-import static com.google.gwt.user.client.Window.Location.getQueryString;
-
 import com.google.gwt.core.client.GWT;
+
+import static com.google.gwt.user.client.Window.Location.getQueryString;
 
 /**
  * 

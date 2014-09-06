@@ -24,6 +24,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
+
+import static com.google.gwt.user.client.Window.Location.getQueryString;
 
 /**
  * Base class for GWT unit tests with mocked pushState support.
@@ -71,6 +74,8 @@ public abstract class AbstractPushStateTest extends GWTTestCase {
     }
 
   }
+  
+  String startPath;
 
   /**
    * All pushed states.
@@ -95,8 +100,16 @@ public abstract class AbstractPushStateTest extends GWTTestCase {
       ExporterUtil.exportAll();
       states = new Stack<State>();
       GWT.create(History.class);
+      startPath = Window.Location.getPath() + getQueryString();
+      // in the browser the page is already in push state when we start
+      try {
+          History.newItem(startPath);
+      } catch (Exception e) {
+          // this will always fail because can't replace state that doesn't exits
+      }
+      History.newItem(startPath);
     }
-
+    
     statesOnTestStart = states.size();
   }
 

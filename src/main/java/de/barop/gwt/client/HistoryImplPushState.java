@@ -40,27 +40,22 @@ public class HistoryImplPushState extends HistoryImpl {
 
     private static final Logger LOG = Logger.getLogger(HistoryImplPushState.class.getName());
 
-    private String lastToken;
+    private String lastPoppedToken;
 
     private boolean firstPush = true;
 
     @Override
     public boolean init() {
-        // initialize HistoryImpl with the current path
         updateHistoryToken(Window.Location.getPath() + Window.Location.getQueryString());
-        // initialize the empty state with the current history token
-        //nativeUpdate(getToken());
-        // initialize the popState handler
         initPopStateHandler();
-
         return true;
     }
 
     @Override
     protected void nativeUpdate(final String historyToken) {
-        if (historyToken.equals(lastToken) || ("/" + historyToken).equals(lastToken)) {
-            LOG.severe("ignore: " + historyToken);
-            lastToken = null;
+        if (historyToken.equals(lastPoppedToken) || ("/" + historyToken).equals(lastPoppedToken)) {
+            LOG.fine("ignore: " + historyToken);
+            lastPoppedToken = null;
             return;
         }
         String newPushStateToken = CodeServerParameterHelper.append(encodeFragment(historyToken));
@@ -75,7 +70,7 @@ public class HistoryImplPushState extends HistoryImpl {
         }
 
         if (LogConfiguration.loggingIsEnabled()) {
-            LOG.severe("Pushed '" + newPushStateToken + "' (" + historyToken + ")");
+            LOG.fine("Pushed '" + newPushStateToken + "' (" + historyToken + ")");
         }
     }
 
@@ -96,7 +91,7 @@ public class HistoryImplPushState extends HistoryImpl {
         }
 
         if (LogConfiguration.loggingIsEnabled()) {
-            LOG.severe("Set token to '" + token + "'");
+            LOG.fine("Set token to '" + token + "'");
         }
         setToken(token);
 
@@ -124,9 +119,9 @@ public class HistoryImplPushState extends HistoryImpl {
      */
     private void onPopState(final String historyToken) {
         if (LogConfiguration.loggingIsEnabled()) {
-            LOG.severe("Popped '" + historyToken + "'");
+            LOG.fine("Popped '" + historyToken + "'");
         }
-        lastToken = historyToken;
+        lastPoppedToken = historyToken;
         updateHistoryToken(historyToken);
 
         fireHistoryChangedImpl(getToken());

@@ -15,10 +15,9 @@
 package de.barop.gwt.client;
 
 
-import static com.google.gwt.user.client.Window.Location.getQueryString;
-
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.Window;
+
+import static com.google.gwt.user.client.Window.Location.getQueryString;
 
 /**
  * 
@@ -27,20 +26,10 @@ import com.google.gwt.user.client.Window;
  */
 public class HistoryImplPushStateGwtTest extends AbstractPushStateTest {
 
-  String startPath;
-
-  @Override
-  protected void gwtSetUp() throws Exception {
-    super.gwtSetUp();
-    startPath = Window.Location.getPath() + getQueryString();
-  }
 
   public void testInit() {
     assertEquals(statesOnTestStart, states.size());
-    assertEquals(startPath, states.peek().url);
-    // remove the query string with the codeserver
-    String expectedHistoryToken = states.peek().url.substring(1).split("\\?")[0];
-    assertEquals(expectedHistoryToken, History.getToken());
+   
   }
 
   public void testOnPopState() {
