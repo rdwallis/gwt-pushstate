@@ -21,7 +21,7 @@ And inherit the PushState module in your GWT module:
 
 ## Don't call History directly
 
-gwt-pushstate replaces the Historian interface with a PushState Implementation if you make a direct call to History gwt-pushstate will not work.
+gwt-pushstate replaces the Historian interface with a PushState Implementation so if you make a direct call to History gwt-pushstate will not work.
 
 Instead create an Historian:
 
