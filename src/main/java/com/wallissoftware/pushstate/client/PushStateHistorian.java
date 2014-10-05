@@ -30,12 +30,12 @@ public class PushStateHistorian implements Historian, HasValueChangeHandlers<Str
      * @param relativePath - the relative path of your app.
      */
     public static void setRelativePath(String relativePath) {
-        assert(IMPL != null) : "You must set relative path before calling any history method";
+        assert(IMPL == null) : "You must set relative path before calling any history method";
         PushStateHistorian.relativePath = relativePath;
     };
     
     public static void setIncludeQueryStringInToken(boolean includeQueryStringInToken) {
-        assert(IMPL != null) : "You must set whether to include the query string before calling any history method";
+        assert(IMPL == null) : "You must set whether to include the query string before calling any history method";
         PushStateHistorian.includeQueryStringInToken = includeQueryStringInToken;
     }
     
