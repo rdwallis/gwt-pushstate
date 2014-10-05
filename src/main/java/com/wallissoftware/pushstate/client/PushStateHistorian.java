@@ -23,6 +23,10 @@ public class PushStateHistorian implements Historian, HasValueChangeHandlers<Str
     
     private static String relativePath = "";
 
+    /**
+     * Call this method in your entry point or bootstrapper to set the relative path of your application.
+     * @param relativePath - the relative path of your app.
+     */
     public static void setRelativePath(String relativePath) {
         assert(IMPL != null) : "You must set relative path before using any history method";
         PushStateHistorian.relativePath = relativePath;
