@@ -1,18 +1,11 @@
 # gwt-pushstate
 
-This is a fork of the excellent work by [jbarop](https://github.com/jbarop/) at https://github.com/jbarop/gwt-pushstate
-
-It contains some major bug fixes and is released under a new maven group.
-
-
-## Description
-
 gwt-pushstate implements easy to use HTML5 pushState support for GWT projects.
 
 
 ## License
 
-    Copyright 2012 Johannes Barop
+    Copyright 2014 Richard Wallis
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -27,71 +20,33 @@ gwt-pushstate implements easy to use HTML5 pushState support for GWT projects.
     limitations under the License.
 
 
-## Features
+## Install
 
-### Easy to use
+Checkout this project and run `mvn install`
 
 Add the gwt-pushstate dependency to your project:
 
     <dependency>
       <groupId>com.wallissoftware</groupId>
       <artifactId>gwt-pushstate</artifactId>
-      <version>1.1.4</version>
+      <version>2.0.0-SNAPSHOT</version>
     </dependency>
 
 And inherit the PushState module in your GWT module:
 
-    <inherits name="de.barop.gwt.PushState" />
+    <inherits name="com.wallissoftware.pushstate.PushState" />
 
 
-### Integrates well with GWT
+## Don't call History directly
 
-gwt-pushstate hooks onto GWT's standard History API. Because of that it plays nice with existing applications and the place mechanism of GWTP-MVP or GWT-Places still works.
+gwt-pushstate replaces the Historian interface with a PushState Implementation if you make a direct call to History gwt-pushstate will not work.
 
+Instead create an Historian:
 
-### Development mode supported
+`Historian historian = GWT.create(Historian.class)`
 
-The development mode still works and is not left accidently when pushing or popping history states.
+then use historian where you used History before:
 
+`historian.newItem(token, true)`
 
-### Hyperlinks with nice URLs
-
-Overriden ``Hyperlink`` and ``InlineHyperlink`` widgets for nice URLs without hashbangs.
-
-
-### Oldskool Browser support
-
-Transparent fallback to URLs with hashes for browsers without pushState support.
-
-
-## Caveats
-
-* Always the complete path of an URL is treated as history token.
-* Path depended stuff might break (``GWT.getHostPageBaseURL()`` or GWTP-dispatch's auto discovery of service URLs).
-* In order to get deeplinking to work some sort of server configuration is needed (URL rewriting, see the sample).
-
-
-## Sample
-
-Check it out at [gwt-pushstate-examples.appspot.com](http://gwt-pushstate-examples.appspot.com).
-
-The sample application is based on GWTP-0.7's [gwtp-sample-hplace](https://github.com/ArcBees/GWTP/tree/391aaa1cfdee94564ab1a6438b482054e076a84c/gwtp-samples/gwtp-sample-hplace). Only a few changes where needed to get it work nicely. These are documented as [commit here](https://github.com/jbarop/gwt-pushstate/commit/a3d278b2fae71adc4ea7fb22c5eb121ada36b644).
-
-The sources are located in ``src/examples`` however the sample is deactivated by default. You can activate it by specifying the ``examples`` maven profile.
-
-
-### Running
-
-You can run the sample with the development mode by executing ``mvn gwt:run -Pexamples`` or the staticly compiled version with ``mvn jetty:run-exploded -Pexamples``.
-
-
-### URL rewriting
-
-To get deeplinking to work all incoming URLs expect the service paths are rewritten to the GWT application [here](https://github.com/jbarop/gwt-pushstate/blob/master/src/examples/webapp/WEB-INF/urlrewrite.xml). This is done using the [UrlRewriteFilter](http://tuckey.org/urlrewrite/) for Java which works nice for local testing and development.
-
-
-### Importing to your IDE
-
-If you want to import the sample application into your IDE make sure you activate the profile.
-
-As the example uses GWT Platforms GenEvents you may have to run ``mvn clean compile -Pexamples`` to get the generated sources generated.
+The place managers for GWT and GWTP (1.4 or above) will work with gwt-pushstate without any modification.
