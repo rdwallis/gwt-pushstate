@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.6.1//EN"
+        "https://raw.githubusercontent.com/gwtproject/gwt/2.6.1/distro-source/core/src/gwt-module.dtd">
+<module>
+    <inherits name='com.google.gwt.place.Place' />
+
+    <source path='client' />
+
+    <define-property name="history.pushStateSupported" values="yes,no" />
+
+    <property-provider name="history.pushStateSupported">
+    <![CDATA[
+      if (typeof(window.history.pushState) == "function") {
+        return "yes";
+      } else {
+        return "no";
+      }
+    ]]>
+    </property-provider>
+
+    <set-property name="history.pushStateSupported" value="no">
+        <any>
+            <when-property-is name="user.agent" value="ie6" />
+            <when-property-is name="user.agent" value="ie8" />
+        </any>
+    </set-property>
+
+    <replace-with class="com.wallissoftware.pushstate.client.PushStateHistorian">
+        <when-type-assignable class="com.google.gwt.place.shared.PlaceHistoryHandler.Historian" />
+    </replace-with>
+
+    <replace-with class="com.wallissoftware.pushstate.client.ui.HyperlinkPushState">
+        <when-type-is class="com.google.gwt.user.client.ui.Hyperlink" />
+    </replace-with>
+    <replace-with class="com.wallissoftware.pushstate.client.ui.InlineHyperlinkPushState">
+        <when-type-is class="com.google.gwt.user.client.ui.InlineHyperlink" />
+    </replace-with>
+
+</module>

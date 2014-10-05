@@ -12,13 +12,16 @@
  * the License.
  */
 
-package de.barop.gwt.client.ui;
+package com.wallissoftware.pushstate.client.ui;
 
+import com.google.gwt.core.shared.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.place.shared.PlaceHistoryHandler.Historian;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.InlineHyperlink;
-
-import de.barop.gwt.client.CodeServerParameterHelper;
 
 /**
  * Widget that is an internal hyperlink and supports HTML5 pushState.
@@ -36,21 +39,23 @@ import de.barop.gwt.client.CodeServerParameterHelper;
  * @author <a href="mailto:jb@barop.de">Johannes Barop</a>
  * 
  */
-public class InlineHyperlinkPushState extends InlineHyperlink {
+public class HyperlinkPushState extends Hyperlink {
 
   private String targetHistoryToken;
+  
+  private final static Historian HISTORIAN = GWT.create(Historian.class);
 
   /**
    * Calls {@link InlineHyperlink#InlineHyperlink(String, String)}.
    */
-  public InlineHyperlinkPushState(final String text, final String targetHistoryToken) {
+  public HyperlinkPushState(final String text, final String targetHistoryToken) {
     super(text, targetHistoryToken);
   }
 
   /**
-   * No arg constructor, calls {@link InlineHyperlink#InlineHyperlink()}.  
+   * No arg constructor, calls {@link InlineHyperlink#InlineHyperlink()}.
    */
-  public InlineHyperlinkPushState() {
+  public HyperlinkPushState() {
   }
 
   @Override
@@ -60,12 +65,33 @@ public class InlineHyperlinkPushState extends InlineHyperlink {
     this.targetHistoryToken = targetHistoryToken;
 
     String href = (targetHistoryToken.startsWith("/")) ? targetHistoryToken : "/" + targetHistoryToken;
-    DOM.setElementProperty(getElement(), "href", CodeServerParameterHelper.append(href));
+    ((Element) getElement().getChild(0)).setPropertyString("href", href);
   }
 
   @Override
   public String getTargetHistoryToken() {
     return targetHistoryToken;
+  }
+  
+  public void onBrowserEvent(Event event) {
+      switch (DOM.eventGetType(event)) {
+      case Event.ONMOUSEOVER:
+          // Only fire the mouse over event if it's coming from outside this
+          // widget.
+      case Event.ONMOUSEOUT:
+          // Only fire the mouse out event if it's leaving this
+          // widget.
+          Element related = event.getRelatedEventTarget().cast();
+          if (related != null && getElement().isOrHasChild(related)) {
+              return;
+          }
+          break;
+      }
+      DomEvent.fireNativeEvent(event, this, this.getElement());
+      if (DOM.eventGetType(event) == Event.ONCLICK) {
+          HISTORIAN.newItem(getTargetHistoryToken(), true);
+          event.preventDefault();
+      }
   }
 
 }
