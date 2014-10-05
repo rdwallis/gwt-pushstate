@@ -65,22 +65,26 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
     private String stripStartSlash(String input) {
         return input.startsWith("/") ? input.substring(1):input;
     }
-
+    
     private static native void replaceState(final String token) /*-{
-        $wnd.history.replaceState({'token':token}, $doc.title, token);
+        $wnd.history.replaceState({'token':token}, $doc.title, "/" + token);
     }-*/;
 
     private static native void pushState(final String token) /*-{
-        $wnd.history.pushState({'token':token}, $doc.title, token);
+        $wnd.history.pushState({'token':token}, $doc.title,  "/" + token);
     }-*/;
-
+    
     private boolean setToken(String newToken) {
         newToken = stripStartSlash(newToken);
-        if (!newToken.equals(token)) {
+        if (!matchesToken(newToken)) {
             token = newToken;
             return true;
         }
         return false;
+    }
+
+    private boolean matchesToken(String compare) {
+        return token != null && (compare.equals(token) || compare.equals(token + "/") || token.equals(compare + "/"));
     }
 
     @Override
@@ -96,7 +100,7 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
     @Override
     public void newItem(String token, boolean issueEvent) {
         if (setToken(token)) {
-            pushState(token);
+            pushState(getToken());
     
             if (issueEvent) {
                 ValueChangeEvent.fire(this, getToken());
