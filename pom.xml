@@ -42,6 +42,12 @@
             <email>jb@barop.de</email>
             <url>http://www.barop.de</url>
         </developer>
+        
+        <developer>
+            <id>rdwallis</id>
+            <name>Richard Wallis</name>
+            <email>rdwallis@gmail.com</email>
+        </developer>
     </developers>
 
 
