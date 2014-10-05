@@ -24,16 +24,23 @@
             <when-property-is name="user.agent" value="ie8" />
         </any>
     </set-property>
+    
+     <replace-with class="com.google.gwt.place.shared.PlaceHistoryHandler.DefaultHistorian">
+        <when-type-assignable class="com.google.gwt.place.shared.PlaceHistoryHandler.Historian" />
+    </replace-with>
 
     <replace-with class="com.wallissoftware.pushstate.client.PushStateHistorian">
         <when-type-assignable class="com.google.gwt.place.shared.PlaceHistoryHandler.Historian" />
+        <when-property-is name="history.pushStateSupported" value="yes"/>
     </replace-with>
 
     <replace-with class="com.wallissoftware.pushstate.client.ui.HyperlinkPushState">
         <when-type-is class="com.google.gwt.user.client.ui.Hyperlink" />
+        <when-property-is name="history.pushStateSupported" value="yes"/>
     </replace-with>
     <replace-with class="com.wallissoftware.pushstate.client.ui.InlineHyperlinkPushState">
         <when-type-is class="com.google.gwt.user.client.ui.InlineHyperlink" />
+        <when-property-is name="history.pushStateSupported" value="yes"/>
     </replace-with>
 
 </module>
