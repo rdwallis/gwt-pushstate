@@ -30,11 +30,11 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
     private final String relativePath;
     
     
-    PushStateHistorianImpl(String relativePath) {
+    PushStateHistorianImpl(String relativePath, boolean includeQueryStringInToken) {
         relativePath = relativePath.startsWith("/") ? relativePath: "/" + relativePath;
         relativePath = relativePath.endsWith("/") ? relativePath: relativePath + "/";
         this.relativePath = relativePath;
-        initToken();
+        initToken(includeQueryStringInToken);
         registerPopstateHandler();
     }
 
@@ -76,8 +76,11 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
         }
     }
 
-    private void initToken() {
-        String token = Window.Location.getPath() + Window.Location.getQueryString();
+    private void initToken(boolean includeQueryStringInToken) {
+        String token = Window.Location.getPath();
+        if (includeQueryStringInToken) {
+            token += Window.Location.getQueryString();
+        }
        
         setToken(token);
         replaceState(relativePath, getToken());

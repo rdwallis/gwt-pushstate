@@ -22,15 +22,22 @@ import com.google.gwt.place.shared.PlaceHistoryHandler.Historian;
 public class PushStateHistorian implements Historian, HasValueChangeHandlers<String> {
     
     private static String relativePath = "";
+    
+    private static boolean includeQueryStringInToken = false;
 
     /**
      * Call this method in your entry point or bootstrapper to set the relative path of your application.
      * @param relativePath - the relative path of your app.
      */
     public static void setRelativePath(String relativePath) {
-        assert(IMPL != null) : "You must set relative path before using any history method";
+        assert(IMPL != null) : "You must set relative path before calling any history method";
         PushStateHistorian.relativePath = relativePath;
     };
+    
+    public static void setIncludeQueryStringInToken(boolean includeQueryStringInToken) {
+        assert(IMPL != null) : "You must set whether to include the query string before calling any history method";
+        PushStateHistorian.includeQueryStringInToken = includeQueryStringInToken;
+    }
     
     private static PushStateHistorianImpl IMPL; 
 
@@ -56,7 +63,7 @@ public class PushStateHistorian implements Historian, HasValueChangeHandlers<Str
     
     private static PushStateHistorianImpl getImpl() {
         if (IMPL == null) {
-            IMPL = new PushStateHistorianImpl(relativePath);
+            IMPL = new PushStateHistorianImpl(relativePath, includeQueryStringInToken);
         }
         return IMPL;
     }
