@@ -28,8 +28,8 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
     private final EventBus handlers = new SimpleEventBus();
     private String token;
 
-    PushStateHistorianImpl() {
-        initToken();
+    PushStateHistorianImpl(String relativePath) {
+        initToken(stripStartSlash(relativePath));
         registerPopstateHandler();
     }
 
@@ -50,9 +50,20 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
         }
     }
 
-    private void initToken() {
-        setToken(Window.Location.getPath() + Window.Location.getQueryString());
+    private void initToken(String relativePath) {
+        String token = Window.Location.getPath() + Window.Location.getQueryString();
+        token = stripStartSlash(token);
+        
+        if (token.startsWith(relativePath)) {
+            token = token.substring(relativePath.length());
+        }
+        
+        setToken(token);
         replaceState(getToken());
+    }
+    
+    private String stripStartSlash(String input) {
+        return input.startsWith("/") ? input.substring(1):input;
     }
 
     private static native void replaceState(final String token) /*-{
@@ -64,7 +75,7 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
     }-*/;
 
     private boolean setToken(String newToken) {
-        newToken = newToken.startsWith("/") ? newToken.substring(1): newToken;
+        newToken = stripStartSlash(newToken);
         if (!newToken.equals(token)) {
             token = newToken;
             return true;

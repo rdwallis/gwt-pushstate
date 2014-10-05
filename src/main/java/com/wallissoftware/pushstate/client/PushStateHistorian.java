@@ -21,26 +21,40 @@ import com.google.gwt.place.shared.PlaceHistoryHandler.Historian;
 
 public class PushStateHistorian implements Historian, HasValueChangeHandlers<String> {
     
-    private final static PushStateHistorianImpl IMPL = new PushStateHistorianImpl(); 
+    private static String relativePath = "";
+
+    public static void setRelativePath(String relativePath) {
+        assert(IMPL != null) : "You must set relative path before using any history method";
+        PushStateHistorian.relativePath = relativePath;
+    };
+    
+    private static PushStateHistorianImpl IMPL; 
 
     @Override
     public void fireEvent(GwtEvent<?> event) {
-        IMPL.fireEvent(event);
+        getImpl().fireEvent(event);
     }
 
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> valueChangeHandler) {
-        return IMPL.addValueChangeHandler(valueChangeHandler);
+        return getImpl().addValueChangeHandler(valueChangeHandler);
     }
 
     @Override
     public String getToken() {
-        return IMPL.getToken();
+        return getImpl().getToken();
     }
 
     @Override
     public void newItem(String token, boolean issueEvent) {
-        IMPL.newItem(token, issueEvent);        
+        getImpl().newItem(token, issueEvent);        
+    }
+    
+    private static PushStateHistorianImpl getImpl() {
+        if (IMPL == null) {
+            IMPL = new PushStateHistorianImpl(relativePath);
+        }
+        return IMPL;
     }
 
 }
