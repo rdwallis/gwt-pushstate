@@ -27,10 +27,36 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
 
     private final EventBus handlers = new SimpleEventBus();
     private String token;
-
+    private final String relativePath;
+    
+    
     PushStateHistorianImpl(String relativePath) {
-        initToken(stripStartSlash(relativePath));
+        relativePath = relativePath.startsWith("/") ? relativePath: "/" + relativePath;
+        relativePath = relativePath.endsWith("/") ? relativePath: relativePath + "/";
+        this.relativePath = relativePath;
+        initToken();
         registerPopstateHandler();
+    }
+
+    @Override
+    public String getToken() {
+        return token;
+    }
+
+    @Override
+    public void newItem(String token, boolean issueEvent) {
+        if (setToken(token)) {
+            pushState(relativePath, getToken());
+    
+            if (issueEvent) {
+                ValueChangeEvent.fire(this, getToken());
+            }
+        }
+    }
+
+    @Override
+    public void fireEvent(GwtEvent<?> event) {
+        this.handlers.fireEvent(event);
     }
 
     private native void registerPopstateHandler()/*-{
@@ -50,32 +76,37 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
         }
     }
 
-    private void initToken(String relativePath) {
+    private void initToken() {
         String token = Window.Location.getPath() + Window.Location.getQueryString();
-        token = stripStartSlash(token);
-        
-        if (token.startsWith(relativePath)) {
-            token = token.substring(relativePath.length());
-        }
-        
+       
         setToken(token);
-        replaceState(getToken());
+        replaceState(relativePath, getToken());
     }
     
     private String stripStartSlash(String input) {
         return input.startsWith("/") ? input.substring(1):input;
     }
     
-    private static native void replaceState(final String token) /*-{
-        $wnd.history.replaceState({'token':token}, $doc.title, "/" + token);
+    private String stripRelativePath(String token) {
+        String relPath = stripStartSlash(relativePath);
+        token = stripStartSlash(token);
+        
+        if (token.startsWith(relPath)) {
+            return stripStartSlash(token.substring(relPath.length()));
+        }
+        return token;
+    }
+    
+    private static native void replaceState(final String relativePath, final String token) /*-{
+        $wnd.history.replaceState({'token':token}, $doc.title, relativePath + token);
     }-*/;
 
-    private static native void pushState(final String token) /*-{
-        $wnd.history.pushState({'token':token}, $doc.title,  "/" + token);
+    private static native void pushState(final String relativePath, final String token) /*-{
+        $wnd.history.pushState({'token':token}, $doc.title,  relativePath + token);
     }-*/;
     
     private boolean setToken(String newToken) {
-        newToken = stripStartSlash(newToken);
+        newToken = stripRelativePath(newToken);
         if (!matchesToken(newToken)) {
             token = newToken;
             return true;
@@ -90,26 +121,5 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> valueChangeHandler) {
         return this.handlers.addHandler(ValueChangeEvent.getType(), valueChangeHandler);
-    }
-
-    @Override
-    public String getToken() {
-        return token;
-    }
-
-    @Override
-    public void newItem(String token, boolean issueEvent) {
-        if (setToken(token)) {
-            pushState(getToken());
-    
-            if (issueEvent) {
-                ValueChangeEvent.fire(this, getToken());
-            }
-        }
-    }
-
-    @Override
-    public void fireEvent(GwtEvent<?> event) {
-        this.handlers.fireEvent(event);
     }
 }

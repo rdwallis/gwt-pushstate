@@ -20,7 +20,6 @@ import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.place.shared.PlaceHistoryHandler.Historian;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.InlineHyperlink;
 
 /**
@@ -33,7 +32,7 @@ import com.google.gwt.user.client.ui.InlineHyperlink;
  * 
  * <p>
  * This has the advantage that no-pushState browsers see the correct nice link while still using a
- * {@link History} implementation which does not cause reloads.
+ * {@link Historian} implementation which does not cause reloads.
  * <p>
  * 
  * @author <a href="mailto:jb@barop.de">Johannes Barop</a>
