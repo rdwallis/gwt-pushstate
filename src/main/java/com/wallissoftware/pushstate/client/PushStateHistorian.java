@@ -23,8 +23,7 @@ public class PushStateHistorian implements Historian, HasValueChangeHandlers<Str
     
     private static String relativePath = "";
     
-    private static boolean includeQueryStringInToken = false;
-
+    
     /**
      * Call this method in your entry point or bootstrapper to set the relative path of your application.
      * @param relativePath - the relative path of your app.
@@ -34,12 +33,7 @@ public class PushStateHistorian implements Historian, HasValueChangeHandlers<Str
         PushStateHistorian.relativePath = relativePath;
     };
     
-    public static void setIncludeQueryStringInToken(boolean includeQueryStringInToken) {
-        assert(IMPL == null) : "You must set whether to include the query string before calling any history method";
-        PushStateHistorian.includeQueryStringInToken = includeQueryStringInToken;
-    }
-    
-    private static PushStateHistorianImpl IMPL; 
+   private static PushStateHistorianImpl IMPL; 
 
     @Override
     public void fireEvent(GwtEvent<?> event) {
@@ -63,7 +57,7 @@ public class PushStateHistorian implements Historian, HasValueChangeHandlers<Str
     
     private static PushStateHistorianImpl getImpl() {
         if (IMPL == null) {
-            IMPL = new PushStateHistorianImpl(relativePath, includeQueryStringInToken);
+            IMPL = new PushStateHistorianImpl(relativePath);
         }
         return IMPL;
     }
