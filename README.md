@@ -4,14 +4,12 @@ gwt-pushstate implements easy to use HTML5 pushState support for GWT projects.
 
 ## Install
 
-Checkout this project and run `mvn install`
-
 Add the gwt-pushstate dependency to your project:
 
     <dependency>
       <groupId>com.wallissoftware</groupId>
       <artifactId>gwt-pushstate</artifactId>
-      <version>2.0.0-SNAPSHOT</version>
+      <version>2.0.0</version>
     </dependency>
 
 And inherit the PushState module in your GWT module:
