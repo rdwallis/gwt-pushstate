@@ -31,11 +31,27 @@ then use historian where you used History before:
 
 The place managers for GWT and GWTP (1.4 or above) will work with gwt-pushstate without any modification.
 
-## Setting relative path
+### Setting relative path
 
 If you're serving your app from a relative path then you need to call `PushStateHistorian.setRelativePath('/path')` in your BootStrapper or EntryPoint before making any calls to Historian.
 
-## License
+### GWTP 1.3.1 and below
+
+The placemanager for GWTP 1.3.1 and below does not use historian and will not work with gwt-pushstate 2.0.0
+
+Instead use gwt-pushstate 1.1.4:
+
+```
+<dependency>
+  <groupId>com.wallissoftware</groupId>
+  <artifactId>gwt-pushstate</artifactId>
+  <version>1.1.1</version>
+</dependency>
+```
+
+Due to changes to GWT's History class 1.1.4 is incompatible with GWT 2.7 and higher.
+
+#### License
 
     Copyright 2014 Richard Wallis
     
