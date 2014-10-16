@@ -17,27 +17,34 @@ And inherit the PushState module in your GWT module:
     <inherits name="com.wallissoftware.pushstate.PushState" />
 
 
-## Don't call History directly
+## Use *Historian* not *History*!
 
-gwt-pushstate replaces the Historian interface with a PushState Implementation so if you make a direct call to History gwt-pushstate will not work.
+gwt-pushstate replaces the `Historian` interface with a PushState Implementation. Because of this you must use the `Historian` interface.  Direct calls to `History` will bypass gwt-pushstate.
 
-Instead create an Historian:
+You can create an `Historian` using `GWT.create`:
 
 `Historian historian = GWT.create(Historian.class)`
 
-then use historian where you used History before:
+or by injecting with gin:
+
+```
+@Inject
+ctor(Historian historian) {
+```
+
+then use `historian` where you used `History` before:
 
 `historian.newItem(token, true)`
 
-The place managers for GWT and GWTP (1.4 or above) will work with gwt-pushstate without any modification.
+The PlaceManagers for GWT and GWTP (1.4 or above) will work with gwt-pushstate without any modification.
 
 ### Setting relative path
 
-If you're serving your app from a relative path then you need to call `PushStateHistorian.setRelativePath('/path')` in your BootStrapper or EntryPoint before making any calls to Historian.
+If you're serving your app from a relative path then you need to call `PushStateHistorian.setRelativePath('/path')` in your BootStrapper or EntryPoint before making any calls to `Historian`.
 
 ### GWTP 1.3.1 and below
 
-The placemanager for GWTP 1.3.1 and below does not use historian and will not work with gwt-pushstate 2.0.0
+The placemanager for GWTP 1.3.1 and below does not use the `Historian` interface and will not work with gwt-pushstate 2.0.0
 
 Instead use gwt-pushstate 1.1.4:
 
@@ -45,7 +52,7 @@ Instead use gwt-pushstate 1.1.4:
 <dependency>
   <groupId>com.wallissoftware</groupId>
   <artifactId>gwt-pushstate</artifactId>
-  <version>1.1.1</version>
+  <version>1.1.4</version>
 </dependency>
 ```
 
