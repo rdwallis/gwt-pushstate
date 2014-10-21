@@ -15,6 +15,8 @@ Add the gwt-pushstate dependency to your project:
 And inherit the PushState module in your GWT module:
 
     <inherits name="com.wallissoftware.pushstate.PushState" />
+    
+If you're using GWTP then you must put the inherits PushState tag after the inherits Mvp tag.
 
 
 ## Use *Historian* not *History*!
