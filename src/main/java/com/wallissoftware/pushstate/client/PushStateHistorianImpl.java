@@ -29,7 +29,6 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
     private String token;
     private final String relativePath;
     
-    
     PushStateHistorianImpl(String relativePath) {
         relativePath = relativePath.startsWith("/") ? relativePath: "/" + relativePath;
         relativePath = relativePath.endsWith("/") ? relativePath: relativePath + "/";
@@ -45,8 +44,16 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
 
     @Override
     public void newItem(String token, boolean issueEvent) {
+        newItem(token, false, false);
+    }
+    
+    public void newItem(String token, boolean issueEvent, boolean replaceState) {
         if (setToken(token)) {
-            pushState(relativePath, getToken());
+            if (replaceState) {
+                replaceState(relativePath, getToken());
+            } else {
+                pushState(relativePath, getToken());
+            }
     
             if (issueEvent) {
                 ValueChangeEvent.fire(this, getToken());

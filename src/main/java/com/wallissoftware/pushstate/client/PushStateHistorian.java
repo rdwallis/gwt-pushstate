@@ -13,6 +13,9 @@
  */
 package com.wallissoftware.pushstate.client;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.GwtEvent;
@@ -22,6 +25,7 @@ import com.google.gwt.place.shared.PlaceHistoryHandler.Historian;
 public class PushStateHistorian implements Historian, HasValueChangeHandlers<String> {
     
     private static String relativePath = "";
+    private static boolean replaceStateOnNextNavigation;
     
     
     /**
@@ -31,9 +35,13 @@ public class PushStateHistorian implements Historian, HasValueChangeHandlers<Str
     public static void setRelativePath(String relativePath) {
         assert(IMPL == null) : "You must set relative path before calling any history method";
         PushStateHistorian.relativePath = relativePath;
-    };
+    }
     
-   private static PushStateHistorianImpl IMPL; 
+    public static void replaceStateOnNextNavigation() {
+        PushStateHistorian.replaceStateOnNextNavigation = true;
+    }
+    
+    private static PushStateHistorianImpl IMPL; 
 
     @Override
     public void fireEvent(GwtEvent<?> event) {
@@ -52,7 +60,10 @@ public class PushStateHistorian implements Historian, HasValueChangeHandlers<Str
 
     @Override
     public void newItem(String token, boolean issueEvent) {
-        getImpl().newItem(token, issueEvent);        
+        getImpl().newItem(token, issueEvent, replaceStateOnNextNavigation);
+        if (issueEvent) {
+            replaceStateOnNextNavigation = false;
+        }
     }
     
     private static PushStateHistorianImpl getImpl() {
@@ -61,5 +72,4 @@ public class PushStateHistorian implements Historian, HasValueChangeHandlers<Str
         }
         return IMPL;
     }
-
 }

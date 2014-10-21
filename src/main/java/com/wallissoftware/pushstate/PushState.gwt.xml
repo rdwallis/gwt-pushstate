@@ -33,6 +33,11 @@
         <when-type-assignable class="com.google.gwt.place.shared.PlaceHistoryHandler.Historian" />
         <when-property-is name="history.pushStateSupported" value="yes"/>
     </replace-with>
+    
+    <replace-with class="com.wallissoftware.pushstate.client.PushStateHistorian">
+        <when-type-is class="com.google.gwt.place.shared.PlaceHistoryHandler.DefaultHistorian" />
+        <when-property-is name="history.pushStateSupported" value="yes"/>
+    </replace-with>
 
     <replace-with class="com.wallissoftware.pushstate.client.ui.HyperlinkPushState">
         <when-type-is class="com.google.gwt.user.client.ui.Hyperlink" />
