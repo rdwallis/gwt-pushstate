@@ -31,7 +31,7 @@ public class PushStateHistorian implements Historian, HasValueChangeHandlers<Str
     public static void setRelativePath(String relativePath) {
         assert(IMPL == null) : "You must set relative path before calling any history method";
         PushStateHistorian.relativePath = relativePath;
-    };
+    }
     
    private static PushStateHistorianImpl IMPL; 
 
@@ -60,6 +60,10 @@ public class PushStateHistorian implements Historian, HasValueChangeHandlers<Str
             IMPL = new PushStateHistorianImpl(relativePath);
         }
         return IMPL;
+    }
+    
+    public static void replaceItem(String newToken, boolean fireEvent) {
+        getImpl().newItem(newToken, fireEvent, true);
     }
 
 }

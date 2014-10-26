@@ -45,13 +45,7 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
 
     @Override
     public void newItem(String token, boolean issueEvent) {
-        if (setToken(token)) {
-            pushState(relativePath, getToken());
-    
-            if (issueEvent) {
-                ValueChangeEvent.fire(this, getToken());
-            }
-        }
+        newItem(token, issueEvent, false);
     }
 
     @Override
@@ -121,5 +115,20 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> valueChangeHandler) {
         return this.handlers.addHandler(ValueChangeEvent.getType(), valueChangeHandler);
+    }
+
+    public void newItem(String token, boolean issueEvent, boolean replaceState) {
+        if (setToken(token)) {
+            if (replaceState) {
+                replaceState(relativePath, getToken());
+            } else {
+                pushState(relativePath, getToken());
+            }
+    
+            if (issueEvent) {
+                ValueChangeEvent.fire(this, getToken());
+            }
+        }
+        
     }
 }
