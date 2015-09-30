@@ -57,9 +57,13 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
         var that = this;
         var oldHandler = $wnd.onpopstate;
         $wnd.onpopstate = $entry(function(e) {
-            that.@com.wallissoftware.pushstate.client.PushStateHistorianImpl::onPopState(Ljava/lang/String;)(e.state.token);
-            if (oldHandler) {
-                oldHandler(e);
+            if (e) {
+                if (e.state) {
+                    that.@com.wallissoftware.pushstate.client.PushStateHistorianImpl::onPopState(Ljava/lang/String;)(e.state.token);
+                }
+                if (oldHandler) {
+                    oldHandler(e);
+                }
             }
         });
     }-*/;
