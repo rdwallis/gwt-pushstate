@@ -9,7 +9,7 @@ Add the gwt-pushstate dependency to your project:
     <dependency>
       <groupId>de.knightsoft-net</groupId>
       <artifactId>gwt-pushstate</artifactId>
-      <version>2.0.0.1</version>
+      <version>2.0.0.2</version>
     </dependency>
 
 And inherit the PushState module in your GWT module:

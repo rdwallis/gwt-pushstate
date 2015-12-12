@@ -125,18 +125,18 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
     final String relPath = this.stripStartSlash(this.relativePath);
     final String token = this.stripStartSlash(ptoken);
 
-    if (token.startsWith(relPath)) {
+    if (token != null && relPath != null && token.startsWith(relPath)) {
       return this.stripStartSlash(token.substring(relPath.length()));
     }
     return token;
   }
 
   private static native void replaceState(final String prelativePath, final String ptoken) /*-{
-    $wnd.history.replaceState({'token':token}, $doc.title, relativePath + token);
+    $wnd.history.replaceState({'token':ptoken}, $doc.title, prelativePath + ptoken);
   }-*/;
 
   private static native void pushState(final String prelativePath, final String ptoken) /*-{
-    $wnd.history.pushState({'token':token}, $doc.title,  relativePath + token);
+    $wnd.history.pushState({'token':ptoken}, $doc.title, prelativePath + ptoken);
   }-*/;
 
   private final boolean setToken(final String pnewToken) {
