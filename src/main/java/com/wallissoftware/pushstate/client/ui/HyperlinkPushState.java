@@ -1,11 +1,11 @@
 /*
  * Copyright 2012 Johannes Barop
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -25,73 +25,76 @@ import com.google.gwt.user.client.ui.InlineHyperlink;
 
 /**
  * Widget that is an internal hyperlink and supports HTML5 pushState.
- * 
+ *
  * <p>
  * It extends GWT's original {@link InlineHyperlink} and moves the history token from the hash to
  * the path.
- * <p>
- * 
+ * </p>
+ *
  * <p>
  * This has the advantage that no-pushState browsers see the correct nice link while still using a
- * {@link History} implementation which does not cause reloads.
- * <p>
- * 
+ * {@link com.google.gwt.user.client.ui.Hyperlink} implementation which does not cause reloads.
+ * </p>
+ *
  * @author <a href="mailto:jb@barop.de">Johannes Barop</a>
- * 
+ *
  */
 public class HyperlinkPushState extends Hyperlink {
 
   private String targetHistoryToken;
-  
-  private final static Historian HISTORIAN = GWT.create(Historian.class);
+
+  private static final Historian HISTORIAN = GWT.create(Historian.class);
 
   /**
    * Calls {@link InlineHyperlink#InlineHyperlink(String, String)}.
    */
-  public HyperlinkPushState(final String text, final String targetHistoryToken) {
-    super(text, targetHistoryToken);
+  public HyperlinkPushState(final String ptext, final String ptargetHistoryToken) {
+    super(ptext, ptargetHistoryToken);
   }
 
   /**
    * No arg constructor, calls {@link InlineHyperlink#InlineHyperlink()}.
    */
   public HyperlinkPushState() {
+    super();
   }
 
   @Override
-  public void setTargetHistoryToken(final String targetHistoryToken) {
-    assert targetHistoryToken != null : "New history item cannot be null!";
+  public void setTargetHistoryToken(final String ptargetHistoryToken) {
+    assert ptargetHistoryToken != null : "New history item cannot be null!";
 
-    this.targetHistoryToken = targetHistoryToken;
+    this.targetHistoryToken = ptargetHistoryToken;
 
-    String href = (targetHistoryToken.startsWith("/")) ? targetHistoryToken : "/" + targetHistoryToken;
-    ((Element) getElement().getChild(0)).setPropertyString("href", href);
+    final String href = (ptargetHistoryToken.length() > 0 && ptargetHistoryToken.charAt(0) == '/')
+        ? ptargetHistoryToken : "/" + ptargetHistoryToken;
+    ((Element) this.getElement().getChild(0)).setPropertyString("href", href);
   }
 
   @Override
   public String getTargetHistoryToken() {
-    return targetHistoryToken;
+    return this.targetHistoryToken;
   }
-  
-  public void onBrowserEvent(Event event) {
-      switch (DOM.eventGetType(event)) {
+
+  @Override
+  public void onBrowserEvent(final Event pevent) {
+    switch (DOM.eventGetType(pevent)) {
       case Event.ONMOUSEOVER:
-          // Only fire the mouse over event if it's coming from outside this
-          // widget.
       case Event.ONMOUSEOUT:
-          // Only fire the mouse out event if it's leaving this
-          // widget.
-          Element related = event.getRelatedEventTarget().cast();
-          if (related != null && getElement().isOrHasChild(related)) {
-              return;
-          }
-          break;
-      }
-      DomEvent.fireNativeEvent(event, this, this.getElement());
-      if (DOM.eventGetType(event) == Event.ONCLICK) {
-          HISTORIAN.newItem(getTargetHistoryToken(), true);
-          event.preventDefault();
-      }
+        // Only fire the mouse over event if it's coming from outside this widget.
+        // Only fire the mouse out event if it's leaving this widget.
+        final Element related = pevent.getRelatedEventTarget().cast();
+        if (related != null && this.getElement().isOrHasChild(related)) {
+          return;
+        }
+        break;
+      default:
+        break;
+    }
+    DomEvent.fireNativeEvent(pevent, this, this.getElement());
+    if (DOM.eventGetType(pevent) == Event.ONCLICK) {
+      HyperlinkPushState.HISTORIAN.newItem(this.getTargetHistoryToken(), true);
+      pevent.preventDefault();
+    }
   }
 
 }
