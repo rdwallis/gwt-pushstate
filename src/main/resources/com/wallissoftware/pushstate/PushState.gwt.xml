@@ -8,6 +8,9 @@
 
     <inherits name='com.google.gwt.place.Place' />
 
+    <!-- gwt version of apache commons lang3. -->
+    <inherits name="org.apache.commons.GWTCommonsLang3" />
+
     <source path='client' />
 
     <define-property name="history.pushStateSupported"

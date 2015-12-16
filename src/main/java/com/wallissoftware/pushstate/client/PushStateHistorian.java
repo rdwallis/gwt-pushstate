@@ -56,8 +56,8 @@ public class PushStateHistorian implements Historian, HasValueChangeHandlers<Str
   }
 
   @Override
-  public void newItem(final String token, final boolean pissueEvent) {
-    PushStateHistorian.getImpl().newItem(token, pissueEvent);
+  public void newItem(final String ptoken, final boolean pissueEvent) {
+    PushStateHistorian.getImpl().newItem(ptoken, pissueEvent);
   }
 
   private static PushStateHistorianImpl getImpl() {

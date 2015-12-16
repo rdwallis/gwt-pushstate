@@ -24,12 +24,13 @@ import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.place.shared.PlaceHistoryHandler.Historian;
 import com.google.gwt.user.client.Window;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers<String> {
 
   private final EventBus handlers = new SimpleEventBus();
   private String token;
   private final String relativePath;
-
 
   /**
    * constructor.
@@ -37,17 +38,8 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
    * @param prelativePath relative path to use
    */
   PushStateHistorianImpl(final String prelativePath) {
-    final StringBuffer tmpRelativePath = new StringBuffer(64);
-    if (prelativePath != null && prelativePath.length() > 0) {
-      if (prelativePath.charAt(0) != '/') {
-        tmpRelativePath.append('/');
-      }
-      tmpRelativePath.append(prelativePath);
-      if (prelativePath.charAt(prelativePath.length() - 1) != '/') {
-        tmpRelativePath.append('/');
-      }
-    }
-    this.relativePath = tmpRelativePath.toString();
+    this.relativePath = StringUtils.endsWith(prelativePath, "/") ? prelativePath
+        : StringUtils.defaultString(prelativePath) + "/";
     this.initToken();
     this.registerPopstateHandler();
   }
@@ -63,11 +55,11 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
   }
 
   /**
-   * set new item.
+   * add new item.
    *
-   * @param ptoken token to set
-   * @param pissueEvent true if event should be fired
-   * @param preplaceState true if state should be replaced
+   * @param ptoken token of the page
+   * @param pissueEvent issue event
+   * @param preplaceState repace state
    */
   public void newItem(final String ptoken, final boolean pissueEvent, final boolean preplaceState) {
     if (this.setToken(ptoken)) {
@@ -88,7 +80,7 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
     this.handlers.fireEvent(pevent);
   }
 
-  private native void registerPopstateHandler() /*-{
+  private native void registerPopstateHandler()/*-{
     var that = this;
     var oldHandler = $wnd.onpopstate;
     $wnd.onpopstate = $entry(function(e) {
@@ -126,17 +118,17 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
     final String token = this.stripStartSlash(ptoken);
 
     if (token != null && relPath != null && token.startsWith(relPath)) {
-      return this.stripStartSlash(token.substring(relPath.length()));
+      return this.stripStartSlash(StringUtils.substring(token, relPath.length()));
     }
     return token;
   }
 
   private static native void replaceState(final String prelativePath, final String ptoken) /*-{
-    $wnd.history.replaceState({'token':ptoken}, $doc.title, prelativePath + ptoken);
+    $wnd.history.replaceState({'token' : ptoken}, $doc.title, prelativePath + ptoken);
   }-*/;
 
   private static native void pushState(final String prelativePath, final String ptoken) /*-{
-    $wnd.history.pushState({'token':ptoken}, $doc.title, prelativePath + ptoken);
+    $wnd.history.pushState({'token' : ptoken}, $doc.title, prelativePath + ptoken);
   }-*/;
 
   private final boolean setToken(final String pnewToken) {
@@ -149,13 +141,14 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
   }
 
   private boolean matchesToken(final String pcompare) {
-    return this.token != null && pcompare != null && (pcompare.equals(this.token)
-        || pcompare.equals(this.token + "/") || this.token.equals(pcompare + "/"));
+    return StringUtils.equals(pcompare, this.token)
+        || StringUtils.equals(pcompare, this.token + "/")
+        || StringUtils.equals(this.token, pcompare + "/");
   }
 
   @Override
   public HandlerRegistration addValueChangeHandler(
-      final ValueChangeHandler<String> valueChangeHandler) {
-    return this.handlers.addHandler(ValueChangeEvent.getType(), valueChangeHandler);
+      final ValueChangeHandler<String> pvalueChangeHandler) {
+    return this.handlers.addHandler(ValueChangeEvent.getType(), pvalueChangeHandler);
   }
 }
