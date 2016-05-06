@@ -3,13 +3,11 @@
     "http://gwtproject.org/doctype/2.7.0/gwt-module.dtd">
 
 <module>
-    <!-- Inherit the core Web Toolkit stuff. -->
-    <inherits name='com.google.gwt.user.User' />
-
-    <inherits name='com.google.gwt.place.Place' />
 
     <!-- gwt version of apache commons lang3. -->
     <inherits name="org.apache.commons.GWTCommonsLang3" />
+
+    <inherits name='com.google.gwt.place.Place' />
 
     <source path='client' />
 

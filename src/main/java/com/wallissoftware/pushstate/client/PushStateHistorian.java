@@ -20,9 +20,11 @@ import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.place.shared.PlaceHistoryHandler.Historian;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class PushStateHistorian implements Historian, HasValueChangeHandlers<String> {
 
-  private static String relativePath = "";
+  private static String relativePath = StringUtils.EMPTY;
 
   private static PushStateHistorianImpl impl;
 

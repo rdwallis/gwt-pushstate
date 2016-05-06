@@ -109,15 +109,14 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
   }
 
   private String stripStartSlash(final String pinput) {
-    return (pinput != null && pinput.length() > 1 && pinput.charAt(0) == '/') ? pinput.substring(1)
-        : pinput;
+    return StringUtils.removeStart(pinput, "/");
   }
 
   private String stripRelativePath(final String ptoken) {
     final String relPath = this.stripStartSlash(this.relativePath);
     final String token = this.stripStartSlash(ptoken);
 
-    if (token != null && relPath != null && token.startsWith(relPath)) {
+    if (StringUtils.startsWith(token, relPath)) {
       return this.stripStartSlash(StringUtils.substring(token, relPath.length()));
     }
     return token;
