@@ -14,6 +14,7 @@
 
 package com.wallissoftware.pushstate.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.GwtEvent;
@@ -24,7 +25,17 @@ import org.apache.commons.lang3.StringUtils;
 
 public class PushStateHistorian implements Historian, HasValueChangeHandlers<String> {
 
-  private static String relativePath = StringUtils.EMPTY;
+  private static String relativePath;
+
+  static {
+    String prefix = StringUtils.removeEnd(GWT.getHostPageBaseURL(), "/");
+    prefix = StringUtils.substring(prefix, StringUtils.indexOf(prefix, '/', 8));
+    if (StringUtils.length(prefix) > 1) {
+      PushStateHistorian.relativePath = prefix;
+    } else {
+      PushStateHistorian.relativePath = StringUtils.EMPTY;
+    }
+  }
 
   private static PushStateHistorianImpl impl;
 
