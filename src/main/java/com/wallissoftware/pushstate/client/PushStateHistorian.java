@@ -28,7 +28,8 @@ public class PushStateHistorian implements Historian, HasValueChangeHandlers<Str
   private static String relativePath;
 
   static {
-    String prefix = StringUtils.removeEnd(GWT.getHostPageBaseURL(), "/");
+    String prefix = StringUtils.removeEnd(StringUtils
+        .removeEnd(StringUtils.removeEnd(GWT.getModuleBaseURL(), "/"), GWT.getModuleName()), "/");
     prefix = StringUtils.substring(prefix, StringUtils.indexOf(prefix, '/', 8));
     if (StringUtils.length(prefix) > 1) {
       PushStateHistorian.relativePath = prefix;
