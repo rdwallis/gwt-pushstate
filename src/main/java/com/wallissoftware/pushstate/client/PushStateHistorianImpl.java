@@ -62,15 +62,15 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
    * @param preplaceState repace state
    */
   public void newItem(final String ptoken, final boolean pissueEvent, final boolean preplaceState) {
-    if (this.setToken(ptoken)) {
-      if (preplaceState) {
-        PushStateHistorianImpl.replaceState(this.relativePath, this.getToken());
-      } else {
-        PushStateHistorianImpl.pushState(this.relativePath, this.getToken());
-      }
-
-      if (pissueEvent) {
-        ValueChangeEvent.fire(this, this.getToken());
+    if (pissueEvent) {
+      ValueChangeEvent.fire(this, ptoken);
+    } else {
+      if (this.setToken(ptoken)) {
+        if (preplaceState) {
+          PushStateHistorianImpl.replaceState(this.relativePath, token);
+        } else {
+          PushStateHistorianImpl.pushState(this.relativePath, token);
+        }
       }
     }
   }
@@ -103,9 +103,7 @@ public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers
 
   private final void initToken() {
     final String token = Window.Location.getPath() + Window.Location.getQueryString();
-
     this.setToken(token);
-    PushStateHistorianImpl.replaceState(this.relativePath, this.getToken());
   }
 
   private String stripStartSlash(final String pinput) {

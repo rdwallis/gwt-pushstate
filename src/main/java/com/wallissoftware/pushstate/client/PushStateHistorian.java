@@ -52,6 +52,10 @@ public class PushStateHistorian implements Historian, HasValueChangeHandlers<Str
     "You must set relative path before calling any history method";
     PushStateHistorian.relativePath = prelativePath;
   }
+  
+  public static String getRelativePath() {
+    return relativePath;
+  }
 
   @Override
   public void fireEvent(final GwtEvent<?> pevent) {
