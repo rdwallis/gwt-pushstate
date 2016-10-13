@@ -14,11 +14,7 @@
 
 package com.wallissoftware.pushstate.client.ui;
 
-import com.google.gwt.core.shared.GWT;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.place.shared.PlaceHistoryHandler.Historian;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.InlineHyperlink;
 
@@ -40,60 +36,44 @@ import com.google.gwt.user.client.ui.InlineHyperlink;
  */
 public class InlineHyperlinkPushState extends InlineHyperlink {
 
-  private String targetHistoryToken;
-
-  private static final Historian HISTORIAN = GWT.create(Historian.class);
+  private HyperlinkPushStateDelegate delegate;
 
   /**
    * Calls {@link InlineHyperlink#InlineHyperlink(String, String)}.
    */
   public InlineHyperlinkPushState(final String ptext, final String ptargetHistoryToken) {
     super(ptext, ptargetHistoryToken);
+    ensureDelegate();
   }
 
   /**
-   * No arg constructor, calls {@link InlineHyperlink#InlineHyperlink()}.  
+   * No arg constructor, calls {@link InlineHyperlink#InlineHyperlink()}.
    */
   public InlineHyperlinkPushState() {
     super();
+    ensureDelegate();
   }
 
+  private void ensureDelegate() {
+    if(delegate == null)
+      delegate = new HyperlinkPushStateDelegate(this);
+  }
+  
   @Override
-  public void setTargetHistoryToken(final String ptargetHistoryToken) {
-    assert ptargetHistoryToken != null : "New history item cannot be null!";
-
-    this.targetHistoryToken = ptargetHistoryToken;
-
-    final String href = (ptargetHistoryToken.length() > 0 && ptargetHistoryToken.charAt(0) == '/')
-        ? ptargetHistoryToken : "/" + ptargetHistoryToken;
-    ((Element) this.getElement().getChild(0)).setPropertyString("href", href);
+  public void setTargetHistoryToken(String ptargetHistoryToken) {
+    ensureDelegate();
+    delegate.setTargetHistoryToken(ptargetHistoryToken);
   }
 
+  
   @Override
   public String getTargetHistoryToken() {
-    return this.targetHistoryToken;
+    return delegate.getTargetHistoryToken();
   }
 
   @Override
-  public void onBrowserEvent(final Event event) {
-    switch (DOM.eventGetType(event)) {
-      case Event.ONMOUSEOVER:
-      case Event.ONMOUSEOUT:
-        // Only fire the mouse over event if it's coming from outside this widget.
-        // Only fire the mouse out event if it's leaving this widget.
-        final Element related = event.getRelatedEventTarget().cast();
-        if (related != null && this.getElement().isOrHasChild(related)) {
-          return;
-        }
-        break;
-      default:
-        break;
-    }
-    DomEvent.fireNativeEvent(event, this, this.getElement());
-    if (DOM.eventGetType(event) == Event.ONCLICK) {
-      InlineHyperlinkPushState.HISTORIAN.newItem(this.getTargetHistoryToken(), true);
-      event.preventDefault();
-    }
+  public void onBrowserEvent(final Event pevent) {
+    delegate.onBrowserEvent(pevent);
   }
 
 }
