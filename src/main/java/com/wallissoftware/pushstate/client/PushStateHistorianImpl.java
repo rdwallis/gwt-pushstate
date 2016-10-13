@@ -1,16 +1,17 @@
 /*
  * Copyright 2014 Richard Wallis
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.wallissoftware.pushstate.client;
 
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
@@ -23,112 +24,128 @@ import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.place.shared.PlaceHistoryHandler.Historian;
 import com.google.gwt.user.client.Window;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class PushStateHistorianImpl implements Historian, HasValueChangeHandlers<String> {
 
-    private final EventBus handlers = new SimpleEventBus();
-    private String token;
-    private final String relativePath;
-    
-    
-    PushStateHistorianImpl(String relativePath) {
-        relativePath = relativePath.startsWith("/") ? relativePath: "/" + relativePath;
-        relativePath = relativePath.endsWith("/") ? relativePath: relativePath + "/";
-        this.relativePath = relativePath;
-        initToken();
-        registerPopstateHandler();
-    }
+  private final EventBus handlers = new SimpleEventBus();
+  private String token;
+  private final String relativePath;
 
-    @Override
-    public String getToken() {
-        return token;
-    }
+  /**
+   * constructor.
+   *
+   * @param prelativePath relative path to use
+   */
+  PushStateHistorianImpl(final String prelativePath) {
+    this.relativePath = StringUtils.endsWith(prelativePath, "/") ? prelativePath
+        : StringUtils.defaultString(prelativePath) + "/";
+    this.initToken();
+    this.registerPopstateHandler();
+  }
 
-    @Override
-    public void newItem(String token, boolean issueEvent) {
-        newItem(token, issueEvent, false);
-    }
+  @Override
+  public final String getToken() {
+    return this.token;
+  }
 
-    @Override
-    public void fireEvent(GwtEvent<?> event) {
-        this.handlers.fireEvent(event);
-    }
+  @Override
+  public void newItem(final String ptoken, final boolean pissueEvent) {
+    this.newItem(ptoken, pissueEvent, false);
+  }
 
-    private native void registerPopstateHandler()/*-{
-        var that = this;
-        var oldHandler = $wnd.onpopstate;
-        $wnd.onpopstate = $entry(function(e) {
-            that.@com.wallissoftware.pushstate.client.PushStateHistorianImpl::onPopState(Ljava/lang/String;)(e.state.token);
-            if (oldHandler) {
-                oldHandler(e);
-            }
-        });
-    }-*/;
-
-    private void onPopState(String token) {
-        if (setToken(token)) {
-            ValueChangeEvent.fire(this, getToken());
+  /**
+   * add new item.
+   *
+   * @param ptoken token of the page
+   * @param pissueEvent issue event
+   * @param preplaceState repace state
+   */
+  public void newItem(final String ptoken, final boolean pissueEvent, final boolean preplaceState) {
+    if (pissueEvent) {
+      ValueChangeEvent.fire(this, ptoken);
+    } else {
+      if (this.setToken(ptoken)) {
+        if (preplaceState) {
+          PushStateHistorianImpl.replaceState(this.relativePath, token);
+        } else {
+          PushStateHistorianImpl.pushState(this.relativePath, token);
         }
+      }
     }
+  }
 
-    private void initToken() {
-        String token = Window.Location.getPath() + Window.Location.getQueryString();
-        
-        setToken(token);
-        replaceState(relativePath, getToken());
-    }
-    
-    private String stripStartSlash(String input) {
-        return input.startsWith("/") ? input.substring(1):input;
-    }
-    
-    private String stripRelativePath(String token) {
-        String relPath = stripStartSlash(relativePath);
-        token = stripStartSlash(token);
-        
-        if (token.startsWith(relPath)) {
-            return stripStartSlash(token.substring(relPath.length()));
+  @Override
+  public void fireEvent(final GwtEvent<?> pevent) {
+    this.handlers.fireEvent(pevent);
+  }
+
+  private native void registerPopstateHandler()/*-{
+    var that = this;
+    var oldHandler = $wnd.onpopstate;
+    $wnd.onpopstate = $entry(function(e) {
+      if (e) {
+        if (e.state) {
+          that.@com.wallissoftware.pushstate.client.PushStateHistorianImpl::onPopState(Ljava/lang/String;)(e.state.token);
         }
-        return token;
-    }
-    
-    private static native void replaceState(final String relativePath, final String token) /*-{
-        $wnd.history.replaceState({'token':token}, $doc.title, relativePath + token);
-    }-*/;
-
-    private static native void pushState(final String relativePath, final String token) /*-{
-        $wnd.history.pushState({'token':token}, $doc.title,  relativePath + token);
-    }-*/;
-    
-    private boolean setToken(String newToken) {
-        newToken = stripRelativePath(newToken);
-        if (!matchesToken(newToken)) {
-            token = newToken;
-            return true;
+        if (oldHandler) {
+          oldHandler(e);
         }
-        return false;
-    }
+      }
+    });
+  }-*/;
 
-    private boolean matchesToken(String compare) {
-        return token != null && (compare.equals(token) || compare.equals(token + "/") || token.equals(compare + "/"));
+  private void onPopState(final String ptoken) {
+    if (this.setToken(ptoken)) {
+      ValueChangeEvent.fire(this, this.getToken());
     }
+  }
 
-    @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> valueChangeHandler) {
-        return this.handlers.addHandler(ValueChangeEvent.getType(), valueChangeHandler);
-    }
+  private final void initToken() {
+    final String token = Window.Location.getPath() + Window.Location.getQueryString();
+    this.setToken(token);
+  }
 
-    public void newItem(String token, boolean issueEvent, boolean replaceState) {
-        if (setToken(token)) {
-            if (replaceState) {
-                replaceState(relativePath, getToken());
-            } else {
-                pushState(relativePath, getToken());
-            }
-    
-            if (issueEvent) {
-                ValueChangeEvent.fire(this, getToken());
-            }
-        }
-        
+  private String stripStartSlash(final String pinput) {
+    return StringUtils.removeStart(pinput, "/");
+  }
+
+  private String stripRelativePath(final String ptoken) {
+    final String relPath = this.stripStartSlash(this.relativePath);
+    final String token = this.stripStartSlash(ptoken);
+
+    if (StringUtils.startsWith(token, relPath)) {
+      return this.stripStartSlash(StringUtils.substring(token, relPath.length()));
     }
+    return token;
+  }
+
+  private static native void replaceState(final String prelativePath, final String ptoken) /*-{
+    $wnd.history.replaceState({'token' : ptoken}, $doc.title, prelativePath + ptoken);
+  }-*/;
+
+  private static native void pushState(final String prelativePath, final String ptoken) /*-{
+    $wnd.history.pushState({'token' : ptoken}, $doc.title, prelativePath + ptoken);
+  }-*/;
+
+  private final boolean setToken(final String pnewToken) {
+    final String newToken = this.stripRelativePath(pnewToken);
+    if (!this.matchesToken(newToken)) {
+      this.token = newToken;
+      return true;
+    }
+    return false;
+  }
+
+  private boolean matchesToken(final String pcompare) {
+    return StringUtils.equals(pcompare, this.token)
+        || StringUtils.equals(pcompare, this.token + "/")
+        || StringUtils.equals(this.token, pcompare + "/");
+  }
+
+  @Override
+  public HandlerRegistration addValueChangeHandler(
+      final ValueChangeHandler<String> pvalueChangeHandler) {
+    return this.handlers.addHandler(ValueChangeEvent.getType(), pvalueChangeHandler);
+  }
 }
